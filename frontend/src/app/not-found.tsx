@@ -49,7 +49,7 @@ export default function NotFound() {
       </div>
 
       <motion.div
-        className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 max-w-4xl"
+        className="container mx-auto text-center relative z-10 max-w-4xl"
         variants={containerVariants}
         initial="hidden"
         animate="visible"

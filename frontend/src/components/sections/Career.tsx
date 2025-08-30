@@ -1,197 +1,96 @@
-'use client'
-
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
 import { CAREER_STEPS } from '@/lib/config'
-import { formatPeriod, getAnimationDuration } from '@/lib/utils'
 
-const Career = () => {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: getAnimationDuration('medium') / 1000,
-        staggerChildren: 0.4
-      }
+export default function Career() {
+  const formatPeriod = (start: string, end: string) => {
+    if (end === 'present') {
+      return `${start} - 現在`
     }
-  }
-
-  const timelineVariants = {
-    hidden: { scaleY: 0 },
-    visible: {
-      scaleY: 1,
-      transition: { 
-        duration: getAnimationDuration('slow') / 1000,
-        ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number]
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: getAnimationDuration('medium') / 1000 }
-    }
-  }
-
-  const itemVariantsRight = {
-    hidden: { opacity: 0, x: 50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: getAnimationDuration('medium') / 1000 }
-    }
+    return `${start} - ${end}`
   }
 
   return (
-    <section id="career" className="py-section bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="max-w-6xl mx-auto"
-        >
-          {/* セクションタイトル */}
-          <motion.div className="text-center mb-16" variants={itemVariants}>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text mb-4">
-              Career <span className="text-primary">Journey</span>
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-4"></div>
-            <p className="text-lg text-muted max-w-2xl mx-auto">
-              異業種からエンジニアへのキャリアチェンジストーリー
-            </p>
-          </motion.div>
+    <section id="career" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
+      <div className="max-w-4xl mx-auto">
+        {/* Section Title */}
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            Career <span className="text-gradient">Journey</span>
+          </h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-400 mx-auto"></div>
+        </div>
 
-          {/* タイムライン */}
-          <div className="relative">
-            {/* 中央の線 */}
-            <motion.div
-              className="absolute left-1/2 transform -translate-x-1/2 w-0.5 bg-gradient-to-b from-primary via-secondary to-accent h-full origin-top"
-              variants={timelineVariants}
-            />
+        {/* Timeline */}
+        <div className="relative">
+          {/* Vertical Line */}
+          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-600"></div>
 
-            {/* キャリアステップ */}
-            <div className="space-y-16">
-              {CAREER_STEPS.map((step, index) => {
-                const isLeft = index % 2 === 0
-                return (
-                  <motion.div
-                    key={step.id}
-                    variants={isLeft ? itemVariants : itemVariantsRight}
-                    className={`relative flex items-center ${
-                      isLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                    } flex-col lg:gap-8`}
-                  >
-                    {/* コンテンツカード */}
-                    <motion.div
-                      className={`w-full lg:w-5/12 ${
-                        isLeft ? 'lg:text-right lg:pr-8' : 'lg:text-left lg:pl-8'
-                      }`}
-                      whileHover={{ scale: 1.02, y: -5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="glass p-6 rounded-lg border border-primary/20 hover-glow">
-                        {/* 期間 */}
-                        <div className="text-accent font-semibold mb-2">
-                          {formatPeriod(step.period.start, step.period.end)}
-                        </div>
-                        
-                        {/* 役職・会社 */}
-                        <h3 className="text-xl font-bold text-text mb-1">
-                          {step.title}
-                        </h3>
-                        <h4 className="text-primary font-semibold mb-3">
-                          {step.company}
-                        </h4>
-                        
-                        {/* 説明 */}
-                        <p className="text-muted text-sm leading-relaxed mb-4">
-                          {step.description}
-                        </p>
-                        
-                        {/* スキル */}
-                        <div className="mb-4">
-                          <h5 className="text-sm font-semibold text-text mb-2">習得スキル:</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {step.skills.map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        {/* 実績 */}
-                        {step.achievements && (
-                          <div>
-                            <h5 className="text-sm font-semibold text-text mb-2">主な実績:</h5>
-                            <ul className="text-xs text-muted space-y-1">
-                              {step.achievements.map((achievement) => (
-                                <li key={achievement} className="flex items-center">
-                                  <span className="text-accent mr-2">▪</span>
-                                  {achievement}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
+          {/* Career Steps */}
+          <div className="space-y-12">
+            {CAREER_STEPS.map((step, index) => (
+              <div key={step.id} className="relative flex items-start gap-8">
+                {/* Timeline Dot */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-16 h-16 bg-slate-800 border-4 border-blue-500 rounded-full flex items-center justify-center text-2xl z-10">
+                    {step.icon}
+                  </div>
+                </div>
 
-                    {/* アイコン（中央） */}
-                    <motion.div
-                      className="absolute left-1/2 transform -translate-x-1/2 w-16 h-16 bg-surface border-4 border-primary rounded-full flex items-center justify-center z-10"
-                      initial={{ scale: 0 }}
-                      animate={isInView ? { scale: 1 } : { scale: 0 }}
-                      transition={{ 
-                        delay: index * 0.4 + 0.5, 
-                        duration: 0.4,
-                        type: "spring",
-                        stiffness: 200
-                      }}
-                      whileHover={{ 
-                        scale: 1.1,
-                        boxShadow: "0 0 20px rgba(148, 163, 184, 0.5)"
-                      }}
-                    >
-                      <span className="text-2xl">{step.icon}</span>
-                    </motion.div>
+                {/* Content */}
+                <div className="card flex-1 min-h-0">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-slate-100 mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-blue-400 font-medium mb-1">
+                      {step.company}
+                    </p>
+                    <p className="text-slate-400 text-sm">
+                      {formatPeriod(step.period.start, step.period.end)}
+                    </p>
+                  </div>
 
-                    {/* スペーサー（モバイル用） */}
-                    <div className="w-full lg:w-5/12"></div>
-                  </motion.div>
-                )
-              })}
-            </div>
+                  <p className="text-slate-300 mb-4 leading-relaxed">
+                    {step.description}
+                  </p>
 
-            {/* 終点のアイコン */}
-            <motion.div
-              className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-accent rounded-full flex items-center justify-center"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-              transition={{ 
-                delay: CAREER_STEPS.length * 0.4 + 1, 
-                duration: 0.4
-              }}
-            >
-              <span className="text-background font-bold text-lg">Now</span>
-            </motion.div>
+                  {/* Skills */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                      主要スキル:
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {step.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-md"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Achievements */}
+                  {step.achievements && step.achievements.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                        主な成果:
+                      </h4>
+                      <ul className="space-y-1">
+                        {step.achievements.map((achievement, i) => (
+                          <li key={i} className="text-slate-300 text-sm">
+                            • {achievement}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
 }
-
-export default Career

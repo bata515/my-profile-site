@@ -1,20 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, useScroll } from 'framer-motion'
-import { cn } from '@/lib/utils'
 
-const Navigation = () => {
+export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { scrollY } = useScroll()
 
   useEffect(() => {
-    const unsubscribe = scrollY.onChange((latest) => {
-      setScrolled(latest > 50)
-    })
-    return unsubscribe
-  }, [scrollY])
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const navItems = [
     { href: '#home', label: 'Home' },
@@ -32,68 +31,55 @@ const Navigation = () => {
   }
 
   return (
-    <motion.header
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
         scrolled 
-          ? 'glass backdrop-blur-md border-b border-border/20' 
+          ? 'bg-slate-950/95 backdrop-blur-sm border-b border-slate-800' 
           : 'bg-transparent'
-      )}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
+      }`}
     >
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* ロゴ */}
-          <motion.div
-            className="flex-shrink-0"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          {/* Logo */}
+          <div className="flex-shrink-0">
             <a
               href="#home"
               onClick={(e) => {
                 e.preventDefault()
                 handleNavClick('#home')
               }}
-              className="text-xl font-bold text-primary hover:text-accent transition-colors focus-ring"
+              className="text-xl font-bold text-blue-500 hover:text-amber-500 transition-colors focus-ring"
             >
               Portfolio
             </a>
-          </motion.div>
+          </div>
 
-          {/* デスクトップメニュー */}
+          {/* Desktop Menu */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item, index) => (
-                <motion.a
+            <div className="ml-10 flex items-baseline space-x-6">
+              {navItems.map((item) => (
+                <a
                   key={item.href}
                   href={item.href}
                   onClick={(e) => {
                     e.preventDefault()
                     handleNavClick(item.href)
                   }}
-                  className="px-3 py-2 text-sm font-medium text-text hover:text-accent transition-colors focus-ring rounded-md"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="px-3 py-2 text-sm font-medium text-slate-300 hover:text-blue-500 transition-colors focus-ring rounded-md"
                 >
                   {item.label}
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>
 
-          {/* モバイルメニューボタン */}
+          {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-text hover:text-accent hover:bg-surface focus-ring"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-300 hover:text-blue-500 hover:bg-slate-800 focus-ring"
               aria-expanded={isOpen}
-              aria-label="メニューを開く"
+              aria-label="Toggle menu"
             >
               <svg
                 className="h-6 w-6"
@@ -121,41 +107,27 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* モバイルメニュー */}
-        <motion.div
-          className={cn(
-            'md:hidden overflow-hidden',
-            isOpen ? 'max-h-screen' : 'max-h-0'
-          )}
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ 
-            height: isOpen ? 'auto' : 0, 
-            opacity: isOpen ? 1 : 0 
-          }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="px-2 pt-2 pb-3 space-y-1 glass">
-            {navItems.map((item, index) => (
-              <motion.a
-                key={item.href}
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleNavClick(item.href)
-                }}
-                className="block px-3 py-2 text-base font-medium text-text hover:text-accent hover:bg-surface transition-colors focus-ring rounded-md"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                {item.label}
-              </motion.a>
-            ))}
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-900/95 backdrop-blur-sm border-t border-slate-800">
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleNavClick(item.href)
+                  }}
+                  className="block px-3 py-2 text-base font-medium text-slate-300 hover:text-blue-500 hover:bg-slate-800 transition-colors focus-ring rounded-md"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </motion.div>
+        )}
       </nav>
-    </motion.header>
+    </header>
   )
 }
-
-export default Navigation
